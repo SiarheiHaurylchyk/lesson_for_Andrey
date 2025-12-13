@@ -21,8 +21,8 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<List<TaskDto>> getAllTasksForTodo(
             @PathVariable Long todoId,
-            @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false, defaultValue = "DESC") String direction) {
+            @PathVariable(required = false) String sortBy,
+            @PathVariable(required = false) String direction) {
         return ResponseEntity.ok(taskService.getAllTasksForTodo(todoId, sortBy, direction));
     }
 
