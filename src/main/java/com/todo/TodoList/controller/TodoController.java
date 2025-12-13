@@ -20,9 +20,8 @@ public class TodoController {
 
     @GetMapping("/todos/{sortBy}/{direction}")
     public ResponseEntity<List<TodoDto>> getAllTodos(
-            @PathVariable(required = false) String sortBy,
-            @PathVariable(required = false) String direction) {
-        return ResponseEntity.ok(todoItemService.getAllTodos(sortBy, direction));
+            @PathVariable(required = false) String sortBy){
+        return ResponseEntity.ok(todoItemService.getAllTodos(sortBy));
     }
 
     @GetMapping("/{id}")

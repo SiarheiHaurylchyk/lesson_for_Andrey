@@ -20,11 +20,12 @@ public class TodoService {
     private final TodoRepository todoRepository;
     private final TodoMapper todoMapper;
 
-    public List<TodoDto> getAllTodos(String sortBy, String direction) {
-        Sort.Direction dir = direction.equalsIgnoreCase("DESC")
+    public List<TodoDto> getAllTodos(String sortBy) {
+        Sort.Direction dir = "DESC".equalsIgnoreCase(sortBy)
                 ? Sort.Direction.DESC
                 : Sort.Direction.ASC;
-        Sort sort = Sort.by(dir, sortBy);
+
+        Sort sort = Sort.by(dir, "createdAt");
 
         return todoRepository.findAll(sort).stream()
                 .map(todoMapper::toDto)
