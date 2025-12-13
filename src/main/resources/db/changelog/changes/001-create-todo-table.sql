@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS todo_items (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    completed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
