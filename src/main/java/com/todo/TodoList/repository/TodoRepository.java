@@ -11,6 +11,10 @@ import java.util.Optional;
 public interface TodoRepository extends JpaRepository<TodoItem, Long> {
     @EntityGraph(attributePaths = "tasks")
     @Override
+    List<TodoItem> findAll();
+    
+    @EntityGraph(attributePaths = "tasks")
+    @Override
     List<TodoItem> findAll(Sort sort);
     
     @EntityGraph(attributePaths = "tasks")

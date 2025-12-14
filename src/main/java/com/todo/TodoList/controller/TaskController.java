@@ -26,7 +26,7 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @GetMapping("/{todoId}")
+    @GetMapping
     @Operation(
             summary = "Получить все задачи для списка дел",
             description = "Возвращает список всех задач (Tasks), принадлежащих указанному Todo Item. " +
@@ -60,7 +60,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getAllTasksForTodo(todoId));
     }
 
-    @GetMapping("/{todoId}/{taskId}")
+    @GetMapping("/{taskId}")
     @Operation(
             summary = "Получить задачу по ID",
             description = "Возвращает конкретную задачу по её уникальному идентификатору. " +
