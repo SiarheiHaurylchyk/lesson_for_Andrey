@@ -1,35 +1,30 @@
 package com.todo.TodoList.service;
 
+import com.todo.TodoList.dto.TaskDto;
 import com.todo.TodoList.dto.TodoDto;
+import com.todo.TodoList.entity.Task;
 import com.todo.TodoList.entity.TodoItem;
 import com.todo.TodoList.mapper.TodoMapper;
 import com.todo.TodoList.repository.TodoRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TodoService {
 
     private final TodoRepository todoRepository;
     private final TodoMapper todoMapper;
 
-    public List<TodoDto> getAllTodos(String sortBy) {
-        Sort.Direction dir = "DESC".equalsIgnoreCase(sortBy)
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
-
-        Sort sort = Sort.by(dir, "createdAt");
-
-        return todoRepository.findAll(sort).stream()
-                .map(todoMapper::toDto)
-                .collect(Collectors.toList());
+    public List<TodoDto> getAllTodos() {
+        List<TodoItem> allTodo = todoRepository.findAll();
+        return allTodo.stream().map(todoMapper::toDto).toList();
     }
 
     public TodoDto getTodoById(Long id) {
@@ -41,6 +36,15 @@ public class TodoService {
     @Transactional
     public TodoDto createTodo(TodoDto todoDto) {
         TodoItem todoItem = todoMapper.toEntity(todoDto);
+        
+        // Опционально создаем задачи, если они переданы в DTO
+        if (todoDto.getTasks() != null && !todoDto.getTasks().isEmpty()) {
+            for (TaskDto taskDto : todoDto.getTasks()) {
+                Task task = todoMapper.toEntity(taskDto);
+                todoItem.addTask(task);
+            }
+        }
+        
         TodoItem saved = todoRepository.save(todoItem);
         return todoMapper.toDto(saved);
     }
@@ -56,10 +60,11 @@ public class TodoService {
     }
 
     @Transactional
-    public void deleteTodo(Long id) {
+    public String deleteTodo(Long id) {
         if (!todoRepository.existsById(id)) {
             throw new NoSuchElementException("TodoItem not found with id: " + id);
         }
         todoRepository.deleteById(id);
+        return "Успешно удалено";
     }
 }

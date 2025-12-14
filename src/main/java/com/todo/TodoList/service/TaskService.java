@@ -7,7 +7,6 @@ import com.todo.TodoList.mapper.TodoMapper;
 import com.todo.TodoList.repository.TaskRepository;
 import com.todo.TodoList.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,15 +23,10 @@ public class TaskService {
     private final TodoRepository todoRepository;
     private final TodoMapper todoMapper;
 
-    public List<TaskDto> getAllTasksForTodo(Long todoId, String sortBy, String direction) {
+    public List<TaskDto> getAllTasksForTodo(Long todoId) {
         verifyTodoExists(todoId);
 
-        Sort.Direction dir = direction.equalsIgnoreCase("DESC")
-                ? Sort.Direction.DESC
-                : Sort.Direction.ASC;
-        Sort sort = Sort.by(dir, sortBy);
-
-        return taskRepository.findByTodoItemId(todoId, sort).stream()
+        return taskRepository.findByTodoItemId(todoId).stream()
                 .map(todoMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -86,14 +80,8 @@ public class TaskService {
     }
 
     private Task findTaskByIdAndTodoId(Long todoId, Long taskId) {
-        Task task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + taskId));
-
-        if (!task.getTodoItem().getId().equals(todoId)) {
-            throw new NoSuchElementException(
-                    "Task with id " + taskId + " does not belong to TodoItem with id " + todoId);
-        }
-
-        return task;
+        return taskRepository.findByIdAndTodoItemId(taskId, todoId)
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Task with id " + taskId + " not found or does not belong to TodoItem with id " + todoId));
     }
 }
